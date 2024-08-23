@@ -5,7 +5,9 @@ import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod'
 import { usePathname, useRouter } from 'next/navigation';
- 
+
+import { useOrganization } from '@clerk/nextjs';
+
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form"
 import { Textarea } from '../ui/textarea';
@@ -21,26 +23,27 @@ interface Props {
 
 function PostThread({userId}: Props) {
     
-        const router =  useRouter();
-        const pathname = usePathname();
-    
-        const form = useForm({
-            resolver: zodResolver(ThreadValidation),
-            defaultValues: {
-                thread: '',
-                accountId: userId,
-            }
-        });
-
-        const onSubmit = async ( values: z.infer<typeof ThreadValidation> ) =>{
-            await createThread({
-                text: values.thread,
-                author: userId,
-                communityId: null,
-                path: pathname,
-            })
-            router.push('/')
+    const router =  useRouter();
+    const pathname = usePathname();
+    const { organization } = useOrganization();
+    const form = useForm({
+        resolver: zodResolver(ThreadValidation),
+        defaultValues: {
+            thread: '',
+            accountId: userId,
         }
+    });
+        
+    
+    const onSubmit = async ( values: z.infer<typeof ThreadValidation> ) =>{
+        await createThread({
+            text: values.thread,
+            author: userId,
+            communityId: organization ? organization.id : null,
+            path: pathname,
+            })
+        router.push('/')
+    }
 
 
     return (

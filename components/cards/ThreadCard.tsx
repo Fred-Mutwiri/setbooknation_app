@@ -1,3 +1,6 @@
+
+import { formatDateString } from '@/lib/utils';
+import { useOrganization } from '@clerk/nextjs';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react'
@@ -17,6 +20,8 @@ interface Props {
 }
 
 function ThreadCard({id,currentUserId, parentId, content, author, community, createdAt, comments, isComment, }: Props) {
+ 
+  
   return (
     <article className={`flex flex-col  w-full  my-2 rounded-xl ${isComment ? 'px-0 xs:px-7': 'bg-dark-2 p-7'} `}>
       <div className="flex items-start justify-between" >
@@ -31,7 +36,7 @@ function ThreadCard({id,currentUserId, parentId, content, author, community, cre
 
           <div className='flex flex-col w-full'>
             <Link href={`/profile/${author.id}`} className=' '>
-              <h4 className='cursor-pointer text-base-semibold text-light-1'>{author.name}</h4>
+              <h4 className='cursor-pointer text-base-semibold text-light-1'>{author.name} | {}</h4>
             </Link>
 
             <p className='mt-2 text-light-2 text-small-regular '>{content}</p>
@@ -53,6 +58,20 @@ function ThreadCard({id,currentUserId, parentId, content, author, community, cre
             </div>
           </div>
         </div>
+
+        {/* TODO: Delete Thread  */}
+        {/* TODO: Show comment Logos  */}
+
+        {!isComment && community && (
+          <Link href={`/communities/${community.id}`} className='mt-5 flex items-center'>
+            <p className='text-subtle-medium text-gray-1'>
+              {formatDateString(createdAt)}
+              -{community.name} community
+            </p>
+
+            <Image src={community.image} alt={community.name} width={14} height={14} className='ml-1 rounded-full object-cover' />
+          </Link>
+        )}
       </div>
 
     </article>
